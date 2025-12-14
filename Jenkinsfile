@@ -78,33 +78,26 @@ pipeline {
             }
         }
         
-        stage('Push Docker Images') {
-            parallel {
-                stage('Push Main App Image') {
-                    steps {
-                        script {
-                            docker_push(
-                                imageName: env.DOCKER_IMAGE_NAME,
-                                imageTag: env.DOCKER_IMAGE_TAG,
-                                credentials: 'dockerhub-credentials'
-                            )
-                        }
-                    }
-                }
-                
-                stage('Push Migration Image') {
-                    steps {
-                        script {
-                            docker_push(
-                                imageName: env.DOCKER_MIGRATION_IMAGE_NAME,
-                                imageTag: env.DOCKER_IMAGE_TAG,
-                                credentials: 'docker-hub-credentials'
-                            )
-                        }
-                    }
-                }
-            }
+stage('Push Docker Images') {
+    steps {
+        script {
+            echo "Pushing Main App Image"
+            docker_push(
+                imageName: env.DOCKER_IMAGE_NAME,
+                imageTag: env.DOCKER_IMAGE_TAG,
+                credentials: 'dockerhub-credentials'
+            )
+
+            echo "Pushing Migration Image"
+            docker_push(
+                imageName: env.DOCKER_MIGRATION_IMAGE_NAME,
+                imageTag: env.DOCKER_IMAGE_TAG,
+                credentials: 'dockerhub-credentials'
+            )
         }
+    }
+}
+
         
         // Add this new stage
         stage('Update Kubernetes Manifests') {
